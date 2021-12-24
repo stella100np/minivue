@@ -19,3 +19,34 @@ function watchEffect(effect) {
     effect()
     activeEffect =null
 }
+
+
+function reactive(raw) {
+    Object.keys(raw).forEach(key => {
+        const dep = new Dep()
+        let value = raw[key]
+
+        Object.defineProperty(raw, key, {
+            get() {
+                dep.depend()
+                return value
+            },
+            set(newValue) {
+                value =newValue
+                dep.notify()
+            }
+        })
+    })
+
+    return raw
+}
+
+const state = reactive({
+    count:0
+})
+
+watchEffect(() => {
+    console.log(state.count)
+})
+
+state.count++
